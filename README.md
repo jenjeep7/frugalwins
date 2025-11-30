@@ -10,10 +10,12 @@ Frugal Wins helps you turn every dollar saved into a victory! Instead of focusin
 
 - 🔐 **User Authentication** - Secure sign-up and login with Firebase Auth
 - 💾 **Cloud Storage** - All your wins are safely stored in Firestore
+- 🎯 **Savings Goals** - Set targets and track progress with visual indicators
 - 📊 **Statistics Dashboard** - Track your total savings, monthly progress, and winning streaks
 - 🏆 **Categorized Wins** - Organize savings by category (Coffee, Groceries, Dining, etc.)
 - 📱 **Real-time Updates** - See your wins update instantly across devices
-- 🎨 **Beautiful UI** - Clean, modern SwiftUI interface
+- 🎨 **Beautiful UI** - Clean, modern SwiftUI interface with progress animations
+- 🎉 **Goal Celebrations** - Get celebrated when you reach your savings goals
 
 ## 🛠 Tech Stack
 
@@ -62,7 +64,20 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Saving wins collection
     match /saving_wins/{winId} {
+      allow read: if request.auth != null && 
+                     request.auth.uid == resource.data.user_id;
+      
+      allow create: if request.auth != null && 
+                       request.auth.uid == request.resource.data.user_id;
+      
+      allow update, delete: if request.auth != null && 
+                               request.auth.uid == resource.data.user_id;
+    }
+    
+    // Saving goals collection
+    match /saving_goals/{goalId} {
       allow read: if request.auth != null && 
                      request.auth.uid == resource.data.user_id;
       
@@ -76,20 +91,29 @@ service cloud.firestore {
 }
 ```
 
-### Firestore Index
+### Firestore Indexes
 
-Create a composite index for the `saving_wins` collection:
-- Collection: `saving_wins`
-- Fields: 
-  - `user_id` (Ascending)
-  - `date_created` (Descending)
+Create these composite indexes:
+
+1. **saving_wins** collection:
+   - Fields: 
+     - `user_id` (Ascending)
+     - `date_created` (Descending)
+
+2. **saving_goals** collection:
+   - Fields:
+     - `user_id` (Ascending)
+     - `date_created` (Descending)
 
 ## 🎯 Usage
 
 1. **Sign Up/Login** - Create an account or sign in
-2. **Add a Win** - Tap the "Add a Win" button and describe what you saved on
-3. **Track Progress** - Watch your total savings grow and maintain your streak
-4. **Celebrate** - Every small saving is a victory! 🎉
+2. **Set a Goal** - Create your first savings goal with a target amount
+3. **Add a Win** - Tap the "Add a Win" button and describe what you saved on
+4. **Track Progress** - Watch your goal progress and total savings grow
+5. **Reach Your Goal** - Get celebrated when you hit your target!
+6. **Reset or Complete** - Choose to apply your savings and complete the goal, or reset and try again
+7. **Maintain Your Streak** - Keep saving daily to build your winning streak 🔥
 
 ## 📱 Screenshots
 
